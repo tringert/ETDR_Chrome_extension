@@ -7,7 +7,8 @@ function doStuffWithDom(jsonData) {
     var infos = JSON.parse(jsonData);
 
     // Set the folder name
-    var downloadPrefix = infos.processNumber === "" ? "" : infos.processNumber.replace("/", "_") + "/";
+    var downloadFolder = "# Letöltött ÉTDR dokumentumok/";
+    var downloadPrefix = infos.processNumber === downloadFolder ? "" : downloadFolder + infos.processNumber.replace("/", "_") + "/";
 
     for (i = 0; i < infos.loc.length; i++) {
 
