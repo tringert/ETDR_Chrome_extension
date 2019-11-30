@@ -8,7 +8,9 @@ function doStuffWithDom(jsonData) {
 
     // Set the folder name
     var downloadFolder = "# Letöltött ÉTDR dokumentumok/";
-    var downloadPrefix = infos.processNumber === downloadFolder ? "" : downloadFolder + infos.processNumber.replace("/", "_") + "/";
+    var downloadPrefix = infos.processNumber === ""
+        ? downloadFolder + currentDateTimeAsFolderName()
+        : downloadFolder + infos.processNumber.replace("/", "_") + "/";
 
     for (i = 0; i < infos.loc.length; i++) {
 
@@ -24,6 +26,18 @@ function doStuffWithDom(jsonData) {
     }
 
     isDevEnv = false;
+}
+
+function currentDateTimeAsFolderName() {
+    var dt = new Date();
+    var year = dt.getFullYear().toString();
+    var month = dt.getMonth().toString();
+    var day = dt.getDay().toString();
+    var hour = dt.getHours().toString();
+    var minutes = dt.getMinutes().toString();
+    var seconds = dt.getSeconds().toString();
+
+    return `${year}.${month}.${day}_${hour + minutes + seconds}/`;
 }
 
 // When the browser-action button is clicked...
