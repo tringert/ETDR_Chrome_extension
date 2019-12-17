@@ -10,7 +10,7 @@ function doStuffWithDom(jsonData) {
     var downloadFolder = "# Letöltött ÉTDR dokumentumok/";
     var downloadPrefix = infos.processNumber === ""
         ? downloadFolder + currentDateTimeAsFolderName()
-        : downloadFolder + infos.processNumber.replace("/", "_") + "/";
+        : `${downloadFolder}${infos.processNumber.replace("/", "_")}_${currentDateTimeAsFolderName()}/`;
 
     for (var i = 0; i < infos.loc.length; i++) {
 
@@ -85,14 +85,14 @@ function openChangelog() {
 
 function currentDateTimeAsFolderName() {
     var dt = new Date();
-    var year = dt.getFullYear().toString();
-    var month = dt.getMonth().toString();
-    var day = dt.getDay().toString();
-    var hour = dt.getHours().toString();
-    var minutes = dt.getMinutes().toString();
-    var seconds = dt.getSeconds().toString();
+    var year = ('0' + dt.getFullYear().toString()).slice(-4);
+    var month = ('0' + dt.getMonth().toString()).slice(-2);
+    var day = ('0' + dt.getDay().toString()).slice(-2);
+    var hour = ('0' + dt.getHours().toString()).slice(-2);
+    var minutes = ('0' + dt.getMinutes().toString()).slice(-2);
+    var seconds = ('0' + dt.getSeconds().toString()).slice(-2);
 
-    return `${year}.${month}.${day}_${hour + minutes + seconds}/`;
+    return `${year} ${month} ${day}_${hour + minutes + seconds}/`;
 }
 
 // When the browser-action button is clicked...
