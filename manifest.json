@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "ÉTDR dokumentumok tömeges letöltése",
   "short_name": "ÉTDR",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Az ÉTDR azon oldalain, ahol dokumentum található, ez a kiegészítő lehetővé teszi azok tömeges letöltését.",
   "author": "Tringer Tamás",
 
