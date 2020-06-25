@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "ÉTDR dokumentumok tömeges letöltése",
   "short_name": "ÉTDR",
-  "version": "1.5.4",
+  "version": "2.0.0",
   "description": "Az ÉTDR azon oldalain, ahol dokumentum található, ez a kiegészítő lehetővé teszi azok tömeges letöltését.",
   "author": "Tringer Tamás",
 
@@ -30,10 +30,8 @@
   "content_scripts": [
     {
       "matches": [
-        "*://*.etdr.gov.hu/RDProcessAction/ProcessActionEdit*",
-        "*://*.etdr.gov.hu/RDProcessByUser/ProcessEdit*",
-        "*://*.etdr.gov.hu/ProcessByOffice/ProcessEdit*",
-        "*://*.etdr.gov.hu/ProcessAction/ProcessActionEdit*"
+        "*://*.etdr.gov.hu/*",
+        "http://localhost:59057/*"
       ],
       "js": [ "content.js" ]
     }
