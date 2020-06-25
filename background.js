@@ -6,11 +6,11 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 
     // ...check the URL of the active tab against our pattern and...
     if (urlRegex.test(tab.url)) {
-        // ...if it matches, send a message specifying a callback too
+        // ...if it matches, send a message specifying a callback to do the download
         chrome.tabs.sendMessage(tab.id, { text: 'report_back' }, doStuffWithDom);
     } else if (!urlRegex.test(tab.url) && urlRegexETDR.test(tab.url)){
-        chrome.tabs.sendMessage(tab.id, { text: 'download_not_available' });
-        return;
+        // ...if not on the required page, then notify the user, that the download isn't available
+		chrome.tabs.sendMessage(tab.id, { text: 'download_not_available' });
     }
 });
 
