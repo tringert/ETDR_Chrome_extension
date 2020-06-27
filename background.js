@@ -31,9 +31,11 @@ async function dLoad(jsonData) {
 
     // Download method
     async function dLoadJob(url, fileName) {
+        // If the filename is specified, the saveAs parameter won't work if the user had set the saveas function previously in the browser settings
         var downloading = await chrome.downloads.download({
             url: url,
             filename: fileName,
+            saveAs: false,
             conflictAction: 'uniquify'
         });
     }
