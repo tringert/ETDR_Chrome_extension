@@ -8,9 +8,9 @@ chrome.browserAction.onClicked.addListener(function (tab) {
     if (urlRegex.test(tab.url)) {
         // ...if it matches, send a message specifying a callback to do the download
         chrome.tabs.sendMessage(tab.id, { text: 'report_back' }, dLoad);
-    } else if (!urlRegex.test(tab.url) && urlRegexETDR.test(tab.url)){
+    } else if (!urlRegex.test(tab.url) && urlRegexETDR.test(tab.url)) {
         // ...if not on the required page, then notify the user, that the download isn't available
-		chrome.tabs.sendMessage(tab.id, { text: 'download_not_available' });
+        chrome.tabs.sendMessage(tab.id, { text: 'download_not_available' });
     }
 });
 
@@ -22,7 +22,7 @@ async function dLoad(jsonData) {
     var downloadFolder = '# Letöltött ÉTDR dokumentumok/';
     var downloadPrefix = infos.processNumber === ""
         ? downloadFolder + currentDateTimeAsFolderName()
-        : `${downloadFolder}${infos.processNumber.replace("/", "_")}_${currentDateTimeAsFolderName()}`;
+        : `${downloadFolder}${infos.processNumber.toString().replace("/", "_")}_${currentDateTimeAsFolderName()}`;
 
     // Iterate through elements and start the download
     for (var i = 0; i < infos.docList.length; i++) {
