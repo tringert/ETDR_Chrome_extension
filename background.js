@@ -1,34 +1,47 @@
-var urlRegex = /^https?:\/\/(?:[^./?#]+\.)?etdr\.gov\.hu\/(RDProcessAction\/ProcessActionEdit|RDProcessByUser\/ProcessEdit|ProcessByOffice\/ProcessEdit|ProcessAction\/ProcessActionEdit)/;
-var devEnvRegex = /^https?:\/\/(?:[^./?#]+\.)?fejl\.etdr\.gov\.hu\/(RDProcessAction\/ProcessActionEdit|RDProcessByUser\/ProcessEdit|ProcessByOffice\/ProcessEdit|ProcessAction\/ProcessActionEdit)/;
-var isDevEnv = new Boolean(false);
+var urlRegex = /\/(RDProcessAction\/ProcessActionEdit|RDProcessByUser\/ProcessEdit|ProcessByOffice\/ProcessEdit|ProcessAction\/ProcessActionEdit)/;
+var urlRegexETDR = /\/(.*etdr.gov.hu|localhost:59057)/;
+
+// When the browser-action button is clicked...
+chrome.browserAction.onClicked.addListener(function (tab) {
+
+    // ...check the URL of the active tab against our pattern and...
+    if (urlRegex.test(tab.url)) {
+        // ...if it matches, send a message specifying a callback to do the download
+        chrome.tabs.sendMessage(tab.id, { text: 'report_back' }, dLoad);
+    } else if (!urlRegex.test(tab.url) && urlRegexETDR.test(tab.url)) {
+        // ...if not on the required page, then notify the user, that the download isn't available
+        chrome.tabs.sendMessage(tab.id, { text: 'download_not_available' });
+    }
+});
 
 // A function to use as callback
-function doStuffWithDom(jsonData) {
+async function dLoad(jsonData) {
     var infos = JSON.parse(jsonData);
 
     // Set the folder name
-    var downloadFolder = "# Letöltött ÉTDR dokumentumok/";
+    var downloadFolder = '# Letöltött ÉTDR dokumentumok/';
     var downloadPrefix = infos.processNumber === ""
         ? downloadFolder + currentDateTimeAsFolderName()
-        : `${downloadFolder}${infos.processNumber.replace("/", "_")}_${currentDateTimeAsFolderName()}/`;
+        : `${downloadFolder}${infos.processNumber.toString().replace("/", "_")}_${currentDateTimeAsFolderName()}`;
 
-    for (var i = 0; i < infos.loc.length; i++) {
+    // Iterate through elements and start the download
+    for (var i = 0; i < infos.docList.length; i++) {
+        await dLoadJob(infos.docList[i][1], downloadPrefix + infos.docList[i][0]);
+    }
 
-        if (isDevEnv) {
-            infos.loc[i].link = infos.loc[i].link.replace('www.etdr.gov.hu', 'fejl.etdr.gov.hu');
-        }
-
-        var downloading = chrome.downloads.download({
-            url: infos.loc[i].link,
-            filename: downloadPrefix + infos.loc[i].filename,
+    // Download method
+    async function dLoadJob(url, fileName) {
+        // If the filename is specified, the saveAs parameter won't work if the user had set the saveas function previously in the browser settings
+        var downloading = await chrome.downloads.download({
+            url: url,
+            filename: fileName,
+            saveAs: false,
             conflictAction: 'uniquify'
         });
     }
 
-    isDevEnv = false;
-
     // Get the local storage to determine if a new install or an update occured
-    var gettingItem = chrome.storage.local.get(["ETDR_ExtVersion", "ETDR_ShowChangeLog"], function (res) {
+    var gettingItem = chrome.storage.local.get(['ETDR_ExtVersion', 'ETDR_ShowChangeLog'], function (res) {
         detectVersionChange(res.ETDR_ExtVersion, res.ETDR_ShowChangeLog);
     });
 }
@@ -36,7 +49,7 @@ function doStuffWithDom(jsonData) {
 // When a new install or an update occured, show a changelog page to the user
 function detectVersionChange(storedVersion, showChangelog) {
     // Get the extensions actual version from the manifest file
-    var extVersion = chrome.runtime.getManifest().version.replace(/\./g, "");
+    var extVersion = chrome.runtime.getManifest().version.replace(/\./g, '');
 
     // Check if the extension's version is stored in the local storage and if it is older than the current one. If yes, then store it and set to show the changelog.
     if (storedVersion === undefined || storedVersion < extVersion) {
@@ -74,8 +87,8 @@ function storeCurrentVersion(value) {
 
 function openChangelog() {
     let page = {
-        type: "popup",
-        url: "backgroundpage.html",
+        type: 'popup',
+        url: 'backgroundpage.html',
         width: 800,
         height: 400
     };
@@ -94,18 +107,3 @@ function currentDateTimeAsFolderName() {
 
     return `${year} ${month} ${day}_${hour + minutes + seconds}/`;
 }
-
-// When the browser-action button is clicked...
-chrome.browserAction.onClicked.addListener(function (tab) {
-
-    // When started in the development environment we need to change the download url
-    if (devEnvRegex.test(tab.url)) {
-        isDevEnv = true;
-    }
-
-    // ...check the URL of the active tab against our pattern and...
-    if (urlRegex.test(tab.url)) {
-        // ...if it matches, send a message specifying a callback too
-        chrome.tabs.sendMessage(tab.id, { text: 'report_back' }, doStuffWithDom);
-    }
-});
