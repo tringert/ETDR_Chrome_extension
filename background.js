@@ -2,7 +2,7 @@ var urlRegex = /\/(RDProcessAction\/ProcessActionEdit|RDProcessByUser\/ProcessEd
 var urlRegexETDR = /\/(.*etdr.gov.hu|localhost:59057)/;
 
 // When the browser-action button is clicked...
-chrome.browserAction.onClicked.addListener(function (tab) {
+chrome.action.onClicked.addListener(async (tab) => {
 
     // ...check the URL of the active tab against our pattern and...
     if (urlRegex.test(tab.url)) {
