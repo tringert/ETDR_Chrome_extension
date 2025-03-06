@@ -88,7 +88,7 @@ function storeCurrentVersion(value) {
 function openChangelog() {
     let page = {
         type: 'popup',
-        url: 'backgroundpage.html',
+        url: 'changelog.html',
         width: 800,
         height: 400
     };
